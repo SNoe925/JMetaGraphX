@@ -22,11 +22,11 @@ object ASMClassVisitor {
 
 class ASMClassVisitor extends ClassVisitor(Opcodes.ASM4)
 {
+  var className: String = ""
+  
   override def visit(version: Int, access: Int, name: String,
     signature: String, superName: String, interfaces: Array[String]) {
-    println("Visiting class: " + name)
-    println("Class Major Version: " + version)
-    println("Super class: " + superName)
+    className = name
     super.visit(version, access, name, signature, superName, interfaces)
   }
 
@@ -38,7 +38,6 @@ class ASMClassVisitor extends ClassVisitor(Opcodes.ASM4)
   
   override def visitMethod(access: Int, name: String,
     desc: String, signature: String, exceptions: Array[String]): MethodVisitor = {
-    println("Method: " + name + " " + desc)
-    super.visitMethod(access, name, desc, signature, exceptions)
+    return new ASMMethodVisitor(className);
   }
 }
