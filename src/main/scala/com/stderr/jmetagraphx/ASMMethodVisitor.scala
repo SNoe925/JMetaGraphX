@@ -1,19 +1,20 @@
 package com.stderr.jmetagraphx
 
 import org.objectweb.asm.MethodVisitor
-import org.objectweb.asm.Opcodes
+import org.objectweb.asm.Opcodes.ASM4
 
 
 /*
  * Visit method body.
  */
-case class ASMMethodVisitor(var caller: String) extends MethodVisitor(Opcodes.ASM4) {
+case class ASMMethodVisitor(var caller: String) extends MethodVisitor(ASM4) {
   /*
    * Visit a method call.
    */
   override def visitMethodInsn(opcode: Int, owner: String, name: String,
       desc: String, itf: Boolean) {
-    println(s"${caller},${owner},${name}${desc}")
+    val callerVertex = ClassVertex.getOrElseUpdate(caller)
+    val ownerVertex = ClassVertex.getOrElseUpdate(owner)
   }
     
 }
