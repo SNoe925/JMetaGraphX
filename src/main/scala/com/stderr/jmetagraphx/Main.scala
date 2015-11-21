@@ -14,13 +14,15 @@ object Main {
     val conf = new SparkConf().setAppName("JMetaGraphX").setMaster("local")
     val sc = new SparkContext(conf)
     ASMClassVisitor.main(args)
-    val graph = Graph[ClassVertex, MethodCall](ClassVertex.toRDD(sc), MethodCall.toRDD(sc))
+    val vertexRDD = ClassVertex.toRDD(sc)
+    val edgeRDD = MethodCall.toRDD(sc)
+    val graph = Graph(vertexRDD, edgeRDD)
     graph.triplets.foreach(format)
   }
 
   def format(t:EdgeTriplet[ClassVertex, MethodCall]): Unit = {
     println(t.srcAttr.name + " calls " + t.dstAttr.name
-      + " . " + t.attr.name + "(" + t.attr.desc + ")")
+      + "." + t.attr.name + "(" + t.attr.desc + ")")
   }
 }
 
