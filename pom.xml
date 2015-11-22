@@ -71,6 +71,9 @@
                             <goal>compile</goal>
 							<goal>testCompile</goal>
                         </goals>
+						<configuration>
+							<checkMultipleScalaVersions>false</checkMultipleScalaVersions>
+						</configuration>
                     </execution>
                 </executions>
             </plugin>
