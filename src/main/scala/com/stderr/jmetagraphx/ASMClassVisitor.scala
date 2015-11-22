@@ -1,19 +1,14 @@
-package com.stderr.jmetagraphx;
+package com.stderr.jmetagraphx
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.InputStream
 
-import org.objectweb.asm.AnnotationVisitor;
-import org.objectweb.asm.Attribute;
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.FieldVisitor;
-import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.AnnotationVisitor
+import org.objectweb.asm.ClassReader
+import org.objectweb.asm.ClassVisitor
+import org.objectweb.asm.Opcodes
 
 object ASMClassVisitor {
-  def main(args: Array[String]): Unit = {
-    val in = classOf[ASMClassVisitor].getResourceAsStream("/java/lang/String.class")
+  def visit(in: InputStream): Unit = {
     val classReader = new ClassReader(in)
     val classVisitor = new ASMClassVisitor
     classReader.accept(classVisitor, 0)
@@ -37,7 +32,7 @@ class ASMClassVisitor extends ClassVisitor(Opcodes.ASM4)
   }
   
   override def visitMethod(access: Int, name: String,
-    desc: String, signature: String, exceptions: Array[String]): MethodVisitor = {
-    return new ASMMethodVisitor(className);
+    desc: String, signature: String, exceptions: Array[String]): ASMMethodVisitor = {
+    new ASMMethodVisitor(className)
   }
 }
