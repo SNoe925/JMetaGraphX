@@ -1,6 +1,7 @@
 package com.stderr.jmetagraphx
 
-import java.io.InputStream
+import java.io.{FileInputStream, File, InputStream}
+import java.util.zip.{ZipEntry, ZipInputStream}
 
 import org.objectweb.asm.AnnotationVisitor
 import org.objectweb.asm.ClassReader
@@ -8,6 +9,23 @@ import org.objectweb.asm.ClassVisitor
 import org.objectweb.asm.Opcodes
 
 object ASMClassVisitor {
+  def visit(allJars: Array[File]):Unit = allJars.foreach(visit)
+
+  def visit(jarFile: File): Unit = {
+    val zip:ZipInputStream = new ZipInputStream(new FileInputStream(jarFile))
+    try {
+      var zipEntry: ZipEntry = zip.getNextEntry
+      while (zipEntry != null) {
+        if (zipEntry.getName.endsWith(".class")) {
+          visit(zip)
+        }
+        zipEntry = zip.getNextEntry
+      }
+    } finally {
+      zip.close()
+    }
+  }
+
   def visit(in: InputStream): Unit = {
     val classReader = new ClassReader(in)
     val classVisitor = new ASMClassVisitor
