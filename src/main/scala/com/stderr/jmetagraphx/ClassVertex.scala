@@ -11,8 +11,10 @@ case class ClassVertex(id: VertexId, name: String) {
 object ClassVertex {
   private val classVertexMap: mutable.Map[String, (VertexId, ClassVertex)] = mutable.HashMap()
 
-  def getOrElseUpdate(name: String) =
-    classVertexMap.getOrElseUpdate(name, new ClassVertex(classVertexMap.size + 1, name).toPair)
+  def getOrElseUpdate(name: String, jarId:Integer = 0) = {
+    val id: VertexId = jarId << 48 + classVertexMap.size + 1
+    classVertexMap.getOrElseUpdate(name.intern(), new ClassVertex(id, name).toPair)
+  }
 
   def toSeq:Seq[Pair[VertexId, ClassVertex]] = classVertexMap.values.toSeq
 }
