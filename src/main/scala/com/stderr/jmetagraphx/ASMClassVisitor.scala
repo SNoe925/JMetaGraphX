@@ -11,6 +11,7 @@ import org.objectweb.asm.Opcodes
 
 object ASMClassVisitor {
   val logger = Logger.getLogger(ASMClassVisitor.getClass)
+  val isDebug = logger.isDebugEnabled
 
   def visit(allJars: Array[File]):Unit = allJars.zip(Stream from 0).foreach(p => visit(p._1, p._2))
 
@@ -21,7 +22,8 @@ object ASMClassVisitor {
       var zipEntry: ZipEntry = zip.getNextEntry
       while (zipEntry != null) {
         if (zipEntry.getName.endsWith(".class")) {
-          logger.info(s"visit class ${zipEntry.getName}")
+          if (isDebug)
+            logger.debug(s"visit class ${zipEntry.getName}")
           visit(zip)
         }
         zipEntry = zip.getNextEntry

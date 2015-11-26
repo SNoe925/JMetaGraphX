@@ -18,15 +18,15 @@ object Main {
   val edgeFilePath: String = s"$homeDirectory/edge.dat"
 
   def main(args: Array[String]) {
+    val conf = new SparkConf().setAppName("JMetaGraphX").setMaster("local")
+    val sc = new SparkContext(conf)
+    val sqlContext = new SQLContext(sc)
+
     val mvnRepo = s"$homeDirectory/.m2/repository"
     val directoryToScan = if (args.isEmpty) new File(mvnRepo) else new File(args(0))
     val allJars = recursiveListFiles(directoryToScan).filter(_.getName.endsWith(".jar"))
     info(s"scanning ${allJars.length} jars")
     ASMClassVisitor.visit(allJars)
-
-    val conf = new SparkConf().setAppName("JMetaGraphX").setMaster("local")
-    val sc = new SparkContext(conf)
-    val sqlContext = new SQLContext(sc)
 
     val vertexRDD = sc.parallelize(ClassVertex.toSeq)
     vertexRDD.saveAsObjectFile(vertexFilePath)
@@ -34,7 +34,7 @@ object Main {
     val edgeRDD = sc.parallelize(MethodCall.toSeq)
     edgeRDD.saveAsObjectFile(edgeFilePath)
 
-//    run(sc)
+    run(sc)
   }
 
   def run(sc:SparkContext) = {
