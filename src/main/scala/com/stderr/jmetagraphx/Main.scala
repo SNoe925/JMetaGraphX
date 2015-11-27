@@ -64,6 +64,24 @@ object Main {
     println(s"\n\n\nTop $topN called classes")
     vertexRDD.filter(x => topCalled.contains(x._1)).map(_._2.name).foreach(println)
     println("\n\n")
+    val pr = pageRank(graph, 0.0001)
+    val importantClasses = pr.vertices.join(graph.vertices).sortBy(_._2._1, ascending=false).map(_._2._2)
+    println("\n\nImportant pageranked classes")
+    importantClasses.take(100).foreach(v => println(v.name))
+    val mostCalled = graph.inDegrees.join(graph.vertices).sortBy(_._2._1, ascending=false).take(10)
+    println(s"\n\nMost called $mostCalled\n")
+    val callsMost = graph.inDegrees.join(graph.vertices).sortBy(_._2._1, ascending=false).take(10)
+    println(s"\n\nMost called $callsMost\n")
+    graph.subgraph(isPackageCall("com/google/protobuf")).triplets.sortBy(_.srcAttr.name).map(_.srcAttr.name).distinct.take(30).foreach(println)
+  }
+
+  def isPackageCall(packageName: String)(e:EdgeTriplet[ClassVertex,MethodCall]):Boolean = {
+    e.dstAttr.name.contains(packageName) && !e.srcAttr.name.contains(packageName)
+  }
+
+  def pageRank(graph: Graph[ClassVertex, MethodCall], tol: Double, resetProb: Double = 0.15): Graph[Double, Double] = {
+    import org.apache.spark.graphx.lib.PageRank
+    PageRank.runUntilConvergence(graph, tol, resetProb)
   }
 
   def info(msg: String): Unit = {
